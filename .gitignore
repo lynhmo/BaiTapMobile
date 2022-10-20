@@ -12,6 +12,3 @@ web-build/
 
 # macOS
 .DS_Store
-
-
-/swagger-ui-master
