@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   TextInput,
+  FlatList,
 } from "react-native";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,11 +15,13 @@ import CustomButton from "../component/Custombutton";
 export default function HomeScreen({ navigation }) {
   const [name, setName] = React.useState("");
   const [pass, setPass] = React.useState("");
+  const [user, setUser] = useState(undefined);
+  const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    getData();
+    // getData();
+    getUser();
   }, []);
-
   const getData = () => {
     try {
       AsyncStorage.getItem("UserData").then((value) => {
@@ -32,52 +35,67 @@ export default function HomeScreen({ navigation }) {
       console.log(error);
     }
   };
+  const handleLogout = async () => {
+    navigation.navigate("Login");
+    setIsAuth(false);
+  };
+  const getUser = async () => {
+    const auth = await AsyncStorage.getItem("currentUser");
 
-  const updateData = async () => {
-    if (name.length == 0) {
-      Alert.alert("Warning!", "Please write your data.");
-    } else {
-      try {
-        var user = {
-          Name: name,
-        };
-        await AsyncStorage.mergeItem("UserData", JSON.stringify(user));
-        Alert.alert("Success!", "Your data has been updated.");
-      } catch (error) {
-        console.log(error);
-      }
+    if (auth) {
+      setIsAuth(true);
+      setUser(JSON.parse(auth));
     }
   };
+  // const updateData = async () => {
+  //   if (name.length == 0) {
+  //     Alert.alert("Warning!", "Please write your data.");
+  //   } else {
+  //     try {
+  //       var user = {
+  //         Name: name,
+  //       };
+  //       await AsyncStorage.mergeItem("UserData", JSON.stringify(user));
+  //       Alert.alert("Success!", "Your data has been updated.");
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // };
 
-  const removeData = async () => {
-    try {
-      await AsyncStorage.clear();
-      navigation.navigate("Login");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const removeData = async () => {
+  //   try {
+  //     await AsyncStorage.clear();
+  //     navigation.navigate("Login");
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <View style={styles.body}>
-      <Text style={[styles.text]}>Welcome {name} !</Text>
+      {/* <Text style={[styles.text]}>Welcome {name} !</Text>
       <Text style={[styles.text]}>Your password is {pass}</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter your name"
         value={name}
         onChangeText={(value) => setName(value)}
-      />
+      /> */}
+      <Text style={[styles.text]}>Hello {user && user.name}</Text>
+      {/* {isAuth && (
+        // <Button color="#999" title="Logout" onPress={handleLogout} />
+        <CustomButton
+          title="Logout"
+          color="#1eb900"
+          onPressFunction={handleLogout}
+        />
+      )} */}
       <CustomButton
-        title="Update"
-        color="#ff7f00"
-        onPressFunction={updateData}
-      />
-      <CustomButton
-        title="Remove"
-        color="#f40100"
-        onPressFunction={removeData}
-      />
+          title="Logout"
+          color="#1eb900"
+          onPressFunction={handleLogout}
+        />
     </View>
   );
 }

@@ -18,20 +18,39 @@ export default function Login({ navigation }) {
     try {
       AsyncStorage.getItem("UserData").then((value) => {
         if (value != null) {
-          // let user = JSON.parse(value);
-          // setName(user.Name);
-          // setPass(user.Pass);
-          // if (user.Name == name && user.Pas == pass) {
-          //   navigation.navigate("Home");
-          // }
-          navigation.navigate("Home");
+          let user = JSON.parse(value);
+          setName(user.Name);
+          setPass(user.Pass);
+          if (user.Name == name && user.Pass == pass) {
+            navigation.navigate("Home");
+          }
+          // navigation.navigate("Home");
         }
       });
     } catch (error) {
       console.log(error);
     }
   };
+  const handleLogin = async () => {
+    if (name === "" || pass === "") {
+      alert("Vui lòng nhập đầy đủ thông tin");
+    } else {
+      try {
+        const { data } = await axios.post("http://localhost:3000/api/login", {
+          username: name,
+          password: word,
+        });
 
+        console.log(data);
+
+        await AsyncStorage.setItem("currentUser", JSON.stringify(data));
+
+        navigation.navigate("Home");
+      } catch (error) {
+        alert(error.response.data);
+      }
+    }
+  };
   // const setData = async () => {
   //   if (name.length == 0 || pass.length == 0) {
   //     Alert.alert("Warning!", "Please write your data.");
